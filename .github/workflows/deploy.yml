@@ -1,0 +1,45 @@
+name: deploy static file to s3 bucket
+
+
+on:
+  push:
+    branches:
+        - main
+  pull_request:
+    branches:
+        - main
+        
+        
+permissions:
+    id-token: write
+    contents: read
+
+env:
+    OIDC_ROLE: ${{secrets.OIDC_ROLE}}
+    AWS_REGION: ${{secrets.AWS_REGION}}
+
+jobs: 
+    deploy_to_s3:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
+            - name: install aws cli
+              uses: unfor19/install-aws-cli-action@v1
+              with:
+                version: 2
+                verbose: false 
+                arch: x86
+
+
+            - name: Configure aws credentials
+              uses: aws-actions/configure-aws-credentials@v4
+              with:
+                role-to-assume: ${{secrets.OIDC_ROLE}}
+                aws-region: ${{secrets.AWS_REGION}}
+            
+
+            - name: Upload files to s3
+              run:
+                  aws s3 cp . s3://project2.iconofthefather.online/ --recursive
