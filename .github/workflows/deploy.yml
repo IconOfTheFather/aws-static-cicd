@@ -43,3 +43,10 @@ jobs:
             - name: Upload files to s3
               run:
                   aws s3 cp . s3://project2.iconofthefather.online/ --recursive
+
+            - name: Invalidate Cloudfront cache
+              uses: chetan/invalidate-cloudfront-action@v2
+              env:
+                DISTRIBUTION: E19KIMJDZ4OQ8N
+                PATHS: "/*"
+
